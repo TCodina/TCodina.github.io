@@ -10,7 +10,7 @@ locale                   : "en-US"
 title                    : "Tomás Codina"
 title_separator          : "-"
 name                     : &name "Tomás Codina"
-description              : &description "Theoretical Physicists"
+description              : &description "Theoretical Physicist"
 url                      : https://tcodina.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "tcodina/tcodina.github.io"
@@ -80,15 +80,15 @@ analytics:
 
 # Site Author
 author:
-  name             : "Your Sidebar Name"
-  avatar           : "profile.png"
-  bio              : "Your biography for the left-hand sidebar"
-  location         : "Location"
+  name             : "Tomás Codina"
+  avatar           : "Photo_Tomas_Codina_2023_large_cut.jpg"
+  bio              : "Theoretical Physicist<br>Working on string theory<br>Learning about NeuroAI"
+  location         : "Berlin, Germany"
   employer         :
-  pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
-  googlescholar    : "http://yourfullgooglescholarurl.com"
-  email            :
-  researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
+  pubmed           : 
+  googlescholar    : "https://scholar.google.com/citations?hl=en&user=2E62FNIAAAAJ"
+  email            : "tomycodina@gmail.com"
+  researchgate     : 
   uri              :
   bitbucket        :
   codepen          :
@@ -96,20 +96,20 @@ author:
   flickr           :
   facebook         :
   foursquare       :
-  github           : "academicpages"
+  github           : "TCodina"
   google_plus      :
   keybase          :
   instagram        :
-  impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
+  impactstory      :
   lastfm           :
-  linkedin         :
-  orcid            : "http://orcid.org/yourorcidurl"
+  linkedin         : "tomas-codina-207b00247"
+  orcid            :
   pinterest        :
   soundcloud       :
-  stackoverflow    : # http://stackoverflow.com/users/123456/username
+  stackoverflow    :
   steam            :
   tumblr           :
-  twitter          : "replacethistwitterhandle"
+  twitter          : "TomasCodina3"
   vine             :
   weibo            :
   xing             :
@@ -193,7 +193,7 @@ collections:
 defaults:
   # _posts
   - scope:
-      path: ""
+      path: "" 
       type: posts
     values:
       layout: single
@@ -265,13 +265,13 @@ plugins:
   - jekyll-gist
   - jekyll-feed
   - jekyll-redirect-from
+  - jemoji
 # mimic GitHub Pages with --safe
 whitelist:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-gist
   - jekyll-feed
-  - jemoji
 
 
 # Archives
