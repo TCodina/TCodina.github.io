@@ -683,20 +683,23 @@ plot_dataset(X_a, Y_a, X.columns)
 
 
     
-![png](output_21_0.png)
+![png](./output_21_0.png)
     
 
 
 From the plots we can confirm what we saw from the correlation analysis: the first five features are positively correlated with the price while the two last are negatively correlated. Moreover, we can also infer the functional dependence, which for the positively correlated set seems to be 
+
 $$y^{(i)} = \sum_{j=0}^{4}\left( \Theta_{1, j} x^{(i)}_{j} + \Theta_{2, j} x^{(i) 2}_{j}\right)$$
+
 while for the remaining two features we propose
+
 $$y^{(i)} = \sum_{j=5}^{6}\left( \Theta_{3, j}\frac{1}{x^{(i)}_{j}} + \Theta_{4, j}\frac{1}{x^{(i) 2}_{j}} \right)$$
 
 This can be written in a more compact form by using $M$-dimensional basis functions of the form
-$$ \pmb{\phi}(\pmb{x}) = (1, x_0, \dots, x_4, x_0^2, \dots, x_4^2, 1/x_5, 1/x_6, 1/x_5^2, 1/x_6^2)^T \in \mathbb{R}^{M + 1}$$
-where we also included the intercept term. 
 
-We implement this feature map by the following function:
+$$ \pmb{\phi}(\pmb{x}) = (1, x_0, \dots, x_4, x_0^2, \dots, x_4^2, 1/x_5, 1/x_6, 1/x_5^2, 1/x_6^2)^T \in \mathbb{R}^{M + 1}$$
+
+where we also included the intercept term. We implement this feature map by the following function:
 
 
 ```python
@@ -743,7 +746,8 @@ print(f'mean: {np.mean(Phi_train, axis=0)}\nvariance: {np.var(Phi_train, axis=0)
      1.01377475e-06 3.30886645e-07]
 
 
-This difference between features, and in particular the presence of high values for some of them, can harm the performance of our optimization step. In order to fix this one usually **normalizes** the inputs. There are several ways of doing so, here we use one of the simplest approaches called **min-max scaling**. This normalization is a simple linear transformation of the form 
+This difference between features, and in particular the presence of high values for some of them, can harm the performance of our optimization step. In order to fix this one usually **normalizes** the inputs. There are several ways of doing so, here we use one of the simplest approaches called **min-max scaling**. This normalization is a simple linear transformation of the form
+ 
 $$ \pmb{x}_{\text{norm}} = \frac{\pmb{x} - \text{Min}(\pmb{x})}{\text{Max}(\pmb{x}) - \text{Min}(\pmb{x})}$$
  
 We need to apply this transformation on the vector features of both training and test sets. However, and this is crucially important, the parameters of the transformation must be fit using the training data only. This is because during the training process there can be no information (leak) coming from the test set that could bias our conclusions. Additionally, in some real-life situations we don't even have access to the test set beforehand. Therefore, the parameters in min-max scaling, namely $\text{Min}(\pmb{x})$ and $\text{Max}(\pmb{x})$ are the min and max values over the $N_{\text{train}}$-dimensional vector features of the training set. With these same parameters we then need to transform the test features as well, so the trained model is then equally applicable to the test set. (For more information on normalization and other scaling techniques, check out [this nice post](https://machinelearningmastery.com/standardscaler-and-minmaxscaler-transforms-in-python/)!)
