@@ -1,6 +1,6 @@
 ---
-title: 'Linear Regression: Practical Example with Car Prices Dataset'
-date: 2100-01-01
+title: 'Linear Regression: a Practical Example with Car Prices Dataset'
+date: 2023-09-07
 permalink: /notes/linear_regression_practice
 tags:
   - cool posts
@@ -20,9 +20,9 @@ $
 
 # Linear Regression for Car Price Estimation
 
-In this notebook we use a linear model to describe a real-world dataset and implement least mean squares (LMS) to learn the optimal parameters. These notes focus on the practical application of linear models. They are the second of a two-part series, whose first part was devoted to the theoretical background.
+In this notebook we use a linear model to describe a real-world dataset and implement least mean squares (LMS) to learn the optimal parameters. These notes focus on the practical application of linear models. They are the second of a two-part series, whose [first part](/notes/linear_regression_theory) was devoted to the theoretical background. The complete code for an end-to-end car prices app can be found in my [GitHub repository](https://github.com/TCodina/car-prices-app). This notebook is meant to be a pedagogical step-by-step explanation of what is inside that repository.
 
-For the data we will use a car prices dataset that can be downloaded from [kaggle page](https://www.kaggle.com/datasets/goyalshalini93/car-data). From that link we get a `csv` file, containing the actual data, and a `xlsx` file with a short description of the content. For the algorithm, instead of building functions and methods from scratch, we will use **Pytorch**, one of the most successful libraries in python for machine learning. 
+For the data we will use a car prices dataset that can be downloaded from [this kaggle page](https://www.kaggle.com/datasets/goyalshalini93/car-data). From that link we get a `csv` file, containing the actual data, and a `xlsx` file with a short description of the content. For the algorithm, instead of building functions and methods from scratch, we will use **Pytorch**, one of the most successful libraries in python for machine learning. 
 
 For other implementations of a regression model on the same dataset, check out [this notebook](https://www.kaggle.com/code/goyalshalini93/car-price-prediction-linear-regression-rfe) and [this blog post](https://towardsdatascience.com/polynomial-regression-using-pytorch-from-scratch-500b7887b0ed).
 
@@ -39,7 +39,6 @@ from torch.utils.data import Dataset, DataLoader
 import torch.nn as nn
 import torch.optim as optim
 from torcheval.metrics.functional import r2_score
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from collections import OrderedDict
 
@@ -683,23 +682,19 @@ plot_dataset(X_a, Y_a, X.columns)
 
 
     
-![png](./output_21_0.png)
+![png](/images/posts/output_21_0.png)
     
 
 
-From the plots we can confirm what we saw from the correlation analysis: the first five features are positively correlated with the price while the two last are negatively correlated. Moreover, we can also infer the functional dependence, which for the positively correlated set seems to be 
+From the plots we can confirm what we saw from the correlation analysis: the first five features are positively correlated with the price while the last two are negatively correlated. Assuming a monotonically increasing function for the positively correlated features and a monotonically decreasing one for the rest, we can propose the following relation between dependent and independent variables
 
-$$y^{(i)} = \sum_{j=0}^{4}\left( \Theta_{1, j} x^{(i)}_{j} + \Theta_{2, j} x^{(i) 2}_{j}\right)$$
+$$y^{(i)} = \sum_{j=0}^{4}\left( \Theta_{1, j} x^{(i)}_{j} + \Theta_{2, j} x^{(i) 2}_{j}\right) + \sum_{j=5}^{6}\left( \Theta_{3, j}\frac{1}{x^{(i)}_{j}} + \Theta_{4, j}\frac{1}{x^{(i) 2}_{j}} \right)$$
 
-while for the remaining two features we propose
-
-$$y^{(i)} = \sum_{j=5}^{6}\left( \Theta_{3, j}\frac{1}{x^{(i)}_{j}} + \Theta_{4, j}\frac{1}{x^{(i) 2}_{j}} \right)$$
-
-This can be written in a more compact form by using $M$-dimensional basis functions of the form
+This can be written in a more compact form by fitting the parameters into a vector and using an $M$-dimensional basis functions of the form
 
 $$ \pmb{\phi}(\pmb{x}) = (1, x_0, \dots, x_4, x_0^2, \dots, x_4^2, 1/x_5, 1/x_6, 1/x_5^2, 1/x_6^2)^T \in \mathbb{R}^{M + 1}$$
 
-where we also included the intercept term. We implement this feature map by the following function:
+where we also included the intercept term and $M=14$. We implement this feature map by the following function:
 
 
 ```python
@@ -826,7 +821,7 @@ As we anticipated, while for the training set all features lie between $[0, 1]$,
 
 ## Dataset and Dataloder
 
-Now that we have our data as normalized tensor objects, its time to express it as an element of Pytorch Dataset class that later will be fed into a Pytorch Dataloader. The former stores all your data, and the latter can be used to iterate through it, manage batches, transform the data, and much more. This two-step procedure keeps your data manageable and helps to simplify your machine learning pipeline.
+Now that we have our data as normalized tensor objects, its time to express it as an element of the Pytorch Dataset class that later will be fed into a Pytorch Dataloader. The former stores all your data, and the latter can be used to iterate through it, manage batches, transform the data, and much more. This two-step procedure keeps your data manageable and helps to simplify your machine learning pipeline.
 
 The standard way of using customize dataset in Pytorch is to create a subclass of Pytorch Dataset class. This subclass needs at least two methods, ``__len__`` and ``__getitem__``. The former gives the length of the dataset and the latter allows us to slice over its elements. In principle we can create a dataset using directly the pre-processed data. However, its a good and common practice to incorporate this step inside Dataset class methods. This is achieved by adding an additional `transform` parameter.
 
@@ -878,11 +873,13 @@ print(len(x_batch), x_batch.shape, len(y_batch), y_batch.shape)
 
 ## Model, loss and optimizer
 
-It was a long journey but finally we have the dataset ready to be trained! However, before starting with the training loop, we need three extra ingredients: a model, a loss function and and optimizer.
+It was a long journey but finally we have the dataset ready to be trained! However, before starting with the training loop, we need three extra ingredients: a model, a loss function, and an optimizer.
 
 As anticipated, we use a linear model of the form
-$$h_{\pmb{\Theta}}(\pmb{x}) = \sum_{k=0}^{M-1} \Theta_{k} \phi_{k}(\pmb{x}) = \pmb{\Theta} \pmb{\phi}(\pmb{x})$$
-where $\Theta_{k}$ are the parameters we need to train and in our case we have $M=15$ of them. With Pytorch this model is easily implemented by using the ``nn.Linear`` method.
+
+$$h_{\pmb{\Theta}}(\pmb{x}) = \sum_{k=0}^{M} \Theta_{k} \phi_{k}(\pmb{x}) = \pmb{\Theta} \pmb{\phi}(\pmb{x})$$
+
+where $\Theta_{k}$ are the parameters we need to train and in our case we have $M+1=15$ of them. With Pytorch this model is easily implemented by using the ``nn.Linear`` method.
 
 
 ```python
@@ -890,7 +887,7 @@ where $\Theta_{k}$ are the parameters we need to train and in our case we have $
 model = nn.Linear(M, 1, bias=False)
 ```
 
-It is interesting to note that by initializing the model in that way, behind the scenes Pytorch already took care of defining the weights which will be trained in later. These can be seen by checking the model's parameters attribute 
+It is interesting to note that by initializing the model in that way, behind the scenes Pytorch already took care of defining the weights which will be trained later. These can be seen by checking the model's parameters attribute 
 
 
 ```python
@@ -906,8 +903,10 @@ print(init_parameters, len(init_parameters[0]))
 
 which contains the curious `requires_grad` attribute. This property states that, from now on, Pytorch will remember any function applied over the parameters so to keep track of partial derivatives. This will be extremelly useful later for optimization, in which we need the gradient of the loss function. 
 
-Now, we define the loss function to be the Mean Squared Error (MSE) function 
+Now, we define the loss to be the Mean Squared Error (MSE) function 
+
 $$ J(\pmb{\Theta}) = \frac12 ||\pmb{\Phi} \pmb{\Theta} - \pmb{Y}||_2^2\,, $$
+
 by using `nn.MSELoss`
 
 
@@ -917,7 +916,9 @@ loss_func = nn.MSELoss()
 ```
 
 Finally, for the optimizer we choose mini-batch Stochastic Gradient Descent (SGD) which applies the update rule
+
 $$\pmb{\Theta}:= \pmb{\Theta} - \alpha \sum_{i=1}^{B} \left[\pmb{\Theta}^T \pmb{\phi}(\pmb{x}^{(i)}) - y^{(i)} \right] \pmb{\phi}(\pmb{x}^{(i)})\,,$$
+
 for an already-defined $B =$ `batch_size` and a learning rate $\alpha$.
 
 
@@ -1044,7 +1045,7 @@ history_dic, optimal_weights = train_model(epochs,
 
 ## History plots
 
-During the training process we stored the parameters, and training and evaluation loss for each epoch so keep track of how the training loop evolved. Now, we plot these quantities
+During the training process we stored the parameters, and training and evaluation loss for each epoch so to keep track of how the training loop evolved. Now, we plot these quantities
 
 
 ```python
@@ -1053,7 +1054,7 @@ plot_history(history_dic)
 
 
     
-![png](output_61_0.png)
+![png](/images/posts/output_61_0.png)
     
 
 
@@ -1078,7 +1079,7 @@ model.state_dict()
 
 
 
-However, the model now contains the parameters corresponding to the last training epoch, and we know they are not the optimal ones. The latter were stored in the training process and so we store those values instead
+However, the model now contains the parameters corresponding to the last training epoch, and we know they are not the optimal ones. The latter were stored in the training process and so we keep those values instead
 
 
 ```python
@@ -1136,7 +1137,7 @@ These are indeed the optimal weights we saved before!
 
 ## Evaluate the model on test set
 
-At this point, we are in possession of a trained model that can predict the price of a car given the seven characteristics mentioned above. To this end, we create a function that takes this vector, transform it accordingly to fit it into the model and return the car's price
+At this point, we are in possession of a trained model that can predict the price of a car given the seven characteristics mentioned above. To this end, we create a function that takes this vector, transforms it accordingly to fit it into the model and returns the car's price
 
 
 ```python
@@ -1158,12 +1159,14 @@ plot_with_predicted(X_test, Y_test, Y_test_pred, X.columns)
 
 
     
-![png](output_78_0.png)
+![png](/images/posts/output_78_0.png)
     
 
 
 In order to have a more quantitative measure of performance we need a suitable **error metric**. An example of such a quantity is MSE, which we used during the training process. However, saying that the loss for the test set is $13351099.0$ does not tell us much... For this purpose, we can use another metric for linear regression, the **R-squared score**, which is a statistical measure that indicates how well the predictions approximate the real data points. This metric is easily implemented in practice via the formula:
+
 $$R^2 = 1 - \frac{||\pmb{Y} - \hat{\pmb{Y}}||_2^2}{||\pmb{Y} - \bar{\pmb{Y}}||_2^2}$$
+
 where $\hat{\pmb{Y}}$ is the prediced target, which in in our case is given by $\hat{\pmb{Y}} = \pmb{\Phi} \pmb{\Theta}$, and $\bar{\pmb{Y}}$ is the mean value. This function is already implemented in Pytorch, it is called `r2_score` from the module `torcheval.metrics.functional`, and so will use it.
 
 
