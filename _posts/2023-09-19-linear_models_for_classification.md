@@ -51,11 +51,11 @@ separable**.
 While in regression problems the target values were continuous, in
 classification they need to represent the K discrete class labels. There
 are various ways of doing that. For instance, if $K=2$, we have a binary
-problem in which we can simply take $y \in \{0,1\}$, corresponding to
+problem in which we can simply take $$y \in \{0,1\}$$, corresponding to
 **negative classes** or **positive classes**, respectively. For $K > 2$,
 namely multiclass problems, it is convenient to introduce the
 **$\pmb{1}$-of-K coding** scheme in which we first define a discrete
-output variable $y \in \{1, 2, \dots, K\}$ and then map this function to
+output variable $$y \in \{1, 2, \dots, K\}$$ and then map this function to
 a vector $\pmb{T}(y) \in \mathbb{R}^K$ for all $y$ such that
 
 $$\label{1ofKcoding}
@@ -287,7 +287,7 @@ We now turn to a multi-class problem where each $D$-dimensional input
 $\pmb{x}$ can belong to one of $K$ classes $C_k$. We encode this
 information in vector outputs using the 1-of-$K$ coding scheme
 introduced above. To this end, we first label each class by
-$y \in \{1, 2, \dots, K\}$ and then map them to
+$$y \in \{1, 2, \dots, K\}$$ and then map them to
 $\pmb{T}(y) \in \mathbb{R}^K$ using
 1-of-K coding. We introduce $K$ parameter vectors, namely
 $\pmb{\Theta}_i$ with $i=1, \dots, K$ and with them we define $K$
