@@ -9,4 +9,4 @@ redirect_from:
 
 {% include base_path %}
 
-You can find my CV [here](https://drive.google.com/file/d/1Vc7XWkJM3I-K3GQib0sWEC3xmPJMTwg2/view?usp=sharing) and a (longer) academic version [here](https://drive.google.com/file/d/1kcUjt__dbtivfYA7Vbya2mRLdo8KM-5Y/view?usp=drive_link).
+You can find my CV [here](https://drive.google.com/file/d/13tPJVyG5Ib_ns0tT6YWkq88-cdV22XUk/view?usp=drive_link) and a (longer) academic version [here](https://drive.google.com/file/d/1QII--1mfJa3NgR4cmgrHNXNU6bNi_Dal/view?usp=drive_link).
